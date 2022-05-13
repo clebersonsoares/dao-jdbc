@@ -28,38 +28,58 @@ public class SellerDaoJDBC implements SellerDao {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = con.prepareStatement("INSERT INTO seller(Name,Email,BirthDate,BaseSalary,DepartmentId) VALUES(?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			ps = con.prepareStatement(
+					"INSERT INTO seller(Name,Email,BirthDate,BaseSalary,DepartmentId) VALUES(?,?,?,?,?)",
+					Statement.RETURN_GENERATED_KEYS);
 			ps.setString(1, obj.getName());
 			ps.setString(2, obj.getEmail());
-			ps.setDate(3,new java.sql.Date(obj.getBirthDate().getTime()));
+			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
 			ps.setDouble(4, 5600.0);
 			ps.setInt(5, obj.getDepartment().getId());
 			int rowAffect = ps.executeUpdate();
-			if(rowAffect > 0) {
-				 rs = ps.getGeneratedKeys();
-				while(rs.next()) {
+			if (rowAffect > 0) {
+				rs = ps.getGeneratedKeys();
+				while (rs.next()) {
 					int id = rs.getInt(1);
 					obj.setId(id);
-					System.out.println("Seller com id = "+obj.getId()+" inserido com sucesso!");
+					System.out.println("Seller com id = " + obj.getId() + " inserido com sucesso!");
 				}
-				
-			}else {
+
+			} else {
 				throw new DbException("Erro ao inserir um Seller");
 			}
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			System.out.println(e.getMessage());
-		}finally {
+		} finally {
 			DB.closeStatement(ps);
 			DB.closeResultSet(rs);
-			
+
 		}
 
 	}
 
 	@Override
 	public void update(Seller obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		try {
+			ps = con.prepareStatement(
+					"UPDATE seller SET Name = ?,Email = ?,BirthDate = ?,BaseSalary = ?,DepartmentId = ? WHERE Id = ?");
+			ps.setString(1, obj.getName());
+			ps.setString(2, obj.getEmail());
+			ps.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			ps.setDouble(4, obj.getBaseSalary());
+			ps.setInt(5, obj.getDepartment().getId());
+			ps.setInt(6, obj.getId());
+			int rowsAffected = ps.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("Registro atualizado com sucesso!");
+			}
 
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		} finally {
+			DB.closeStatement(ps);
+		}
 	}
 
 	@Override
@@ -74,20 +94,21 @@ public class SellerDaoJDBC implements SellerDao {
 		ResultSet rs = null;
 		try {
 			st = con.createStatement();
-			rs = st.executeQuery("SELECT seller .*,department.Name as DepName FROM seller INNER JOIN department ON seller.DepartmentId = department.Id ORDER BY Name");
+			rs = st.executeQuery(
+					"SELECT seller .*,department.Name as DepName FROM seller INNER JOIN department ON seller.DepartmentId = department.Id ORDER BY Name");
 			List<Seller> list = new ArrayList<Seller>();
-			Map<Integer,Department> map = new HashMap<Integer, Department>();
-			while(rs.next()) {
+			Map<Integer, Department> map = new HashMap<Integer, Department>();
+			while (rs.next()) {
 				Department dep = map.get(rs.getInt("DepartmentId"));
-				if(dep == null) {
+				if (dep == null) {
 					dep = instaciateDepartment(rs);
 					map.put(rs.getInt("DepartmentId"), dep);
 				}
-			Seller s = instanciateSeller(rs, dep);
-			list.add(s);
+				Seller s = instanciateSeller(rs, dep);
+				list.add(s);
 			}
 			return list;
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
 		return null;
