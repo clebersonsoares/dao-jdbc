@@ -1,16 +1,15 @@
 package application;
 
-import java.util.Date;
-import java.util.List;
+import java.util.Scanner;
 
 import model.dao.DaoFactory;
 import model.dao.SellerDao;
-import model.entities.Department;
 import model.entities.Seller;
 
 public class Program {
 
 	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 		System.out.println("====  TEST 1 FINDBYID  ====");
 		SellerDao sellerDao = DaoFactory.createSellerDao();
 		Seller se = sellerDao.findById(3);
@@ -30,10 +29,16 @@ public class Program {
 //		Seller ins = new Seller( null,"Davi Lafaiete","davi@gmail.com",new Date(),15000.0, department);
 //		sellerDao.insert(ins);
 		
-		System.out.println("\n====  TEST 5 UPDATE  ====");
-		Seller up = sellerDao.findById(9);
-		up.setName("Binho");
-		sellerDao.update(up);
+//		System.out.println("\n====  TEST 5 UPDATE  ====");
+//		Seller up = sellerDao.findById(9);
+//		up.setName("Binho");
+//		sellerDao.update(up);
+		
+		System.out.println("\n====  TEST 6 DELETE  ====");
+		System.out.println("Digite o id do seller que você deseja deletar ...");
+		int id = sc.nextInt();
+		sellerDao.deleteById(id);
+		
 	}
 
 }
