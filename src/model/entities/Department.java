@@ -16,9 +16,9 @@ public class Department implements Serializable {
 		this.id = id;
 		this.name = name;
 	}
-	
+
 	public Integer getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Integer id) {
@@ -33,10 +33,8 @@ public class Department implements Serializable {
 		this.name = name;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
+	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -53,7 +51,5 @@ public class Department implements Serializable {
 	public String toString() {
 		return "Department [id=" + id + ", name=" + name + "]";
 	}
-	
-	
 
 }
