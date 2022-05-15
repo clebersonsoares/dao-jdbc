@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.DB;
@@ -89,13 +90,50 @@ public class DepartmentDaoJDBC implements DepartmentDao{
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		try {
+			con.setAutoCommit(false);
+			ps = con.prepareStatement("DELETE FROM department WHERE Id = ?");
+			ps.setInt(1, id);
+			int rowsAffected = ps.executeUpdate();
+			if(rowsAffected > 0) {
+				con.commit();
+				System.out.println("Departamento deletado com sucesso");
+			}else {
+				con.rollback();
+				System.out.println("Infelizmente não foi possível deletar o Departamento :(");
+			}
+			
+			
+		}catch(SQLException e) {
+			
+			System.out.println(e.getMessage());
+		}finally {
+			DB.closeStatement(ps);
+		}
 		
 	}
 
 	@Override
 	public List<Department> findAll() {
-		// TODO Auto-generated method stub
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("SELECT *FROM department");
+			List<Department>list = new ArrayList<Department>();
+			while(rs.next()) {
+				Department dep = instaciateDepartment(rs);
+				list.add(dep);
+			}
+			return list;
+			
+		}catch(SQLException e) {
+			System.out.println(e.getMessage());
+		}finally {
+			DB.closeResultSet(rs);
+			DB.closeStatement(st);
+		}
 		return null;
 	}
 	@Override
